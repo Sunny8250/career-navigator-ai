@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Briefcase, MapPin, Clock, ExternalLink, Sparkles, FileText,
-  MessageSquare, ChevronRight, CheckCircle2, XCircle, AlertCircle
+  MessageSquare, ChevronRight, CheckCircle2, XCircle, AlertCircle, Calendar, DollarSign
 } from "lucide-react";
 
 interface Job {
@@ -10,25 +10,29 @@ interface Job {
   title: string;
   company: string;
   location: string;
-  status: "applied" | "interview" | "offer" | "rejected";
+  status: "applied" | "interview" | "saved" | "rejected";
   date: string;
   salary: string;
   skills: string[];
   eligibility: number;
   missingSkills: string[];
+  description: string;
+  deadline: string;
 }
 
 const jobs: Job[] = [
-  { id: 1, title: "Frontend Developer", company: "Stripe", location: "Remote", status: "interview", date: "Mar 25", salary: "$120k-$160k", skills: ["React", "TypeScript", "CSS"], eligibility: 85, missingSkills: ["GraphQL"] },
-  { id: 2, title: "Software Engineer", company: "Google", location: "Mountain View", status: "applied", date: "Mar 22", salary: "$150k-$200k", skills: ["Go", "Python", "DSA"], eligibility: 70, missingSkills: ["Go", "System Design"] },
-  { id: 3, title: "Full Stack Developer", company: "Notion", location: "San Francisco", status: "offer", date: "Mar 18", salary: "$130k-$170k", skills: ["React", "Node.js", "PostgreSQL"], eligibility: 92, missingSkills: [] },
-  { id: 4, title: "Backend Engineer", company: "Linear", location: "Remote", status: "rejected", date: "Mar 15", salary: "$140k-$180k", skills: ["Node.js", "TypeScript", "AWS"], eligibility: 60, missingSkills: ["AWS", "Docker", "CI/CD"] },
+  { id: 1, title: "Frontend Developer", company: "Stripe", location: "Remote", status: "interview", date: "Mar 25", salary: "$120k-$160k", skills: ["React", "TypeScript", "CSS"], eligibility: 85, missingSkills: ["GraphQL"], description: "Build and maintain user-facing features for Stripe's payment dashboard. Collaborate with design and product teams to deliver polished, performant UI components.", deadline: "Apr 15, 2025" },
+  { id: 2, title: "Software Engineer", company: "Google", location: "Mountain View", status: "applied", date: "Mar 22", salary: "$150k-$200k", skills: ["Go", "Python", "DSA"], eligibility: 70, missingSkills: ["Go", "System Design"], description: "Design and implement scalable backend services. Work on distributed systems handling millions of requests per second.", deadline: "Apr 10, 2025" },
+  { id: 3, title: "Full Stack Developer", company: "Notion", location: "San Francisco", status: "saved", date: "Mar 18", salary: "$130k-$170k", skills: ["React", "Node.js", "PostgreSQL"], eligibility: 92, missingSkills: [], description: "Work across the stack to build new features for Notion's collaborative workspace. Focus on real-time collaboration and performance.", deadline: "Apr 20, 2025" },
+  { id: 4, title: "Backend Engineer", company: "Linear", location: "Remote", status: "rejected", date: "Mar 15", salary: "$140k-$180k", skills: ["Node.js", "TypeScript", "AWS"], eligibility: 60, missingSkills: ["AWS", "Docker", "CI/CD"], description: "Build and scale Linear's backend infrastructure. Work on API design, database optimization, and real-time sync.", deadline: "Mar 30, 2025" },
+  { id: 5, title: "DevOps Engineer", company: "Vercel", location: "Remote", status: "applied", date: "Mar 28", salary: "$130k-$165k", skills: ["Docker", "Kubernetes", "Terraform"], eligibility: 55, missingSkills: ["Kubernetes", "Terraform"], description: "Manage cloud infrastructure and CI/CD pipelines for Vercel's edge network. Automate deployments and monitoring.", deadline: "Apr 25, 2025" },
+  { id: 6, title: "ML Engineer", company: "OpenAI", location: "San Francisco", status: "saved", date: "Mar 20", salary: "$180k-$250k", skills: ["Python", "PyTorch", "ML"], eligibility: 45, missingSkills: ["PyTorch", "ML", "CUDA"], description: "Research and develop machine learning models for language understanding. Contribute to cutting-edge AI research.", deadline: "May 1, 2025" },
 ];
 
 const statusConfig = {
   applied: { label: "Applied", color: "bg-info/10 text-info", icon: Clock },
   interview: { label: "Interview", color: "bg-warning/10 text-warning", icon: AlertCircle },
-  offer: { label: "Offer", color: "bg-success/10 text-success", icon: CheckCircle2 },
+  saved: { label: "Saved", color: "bg-primary/10 text-primary", icon: CheckCircle2 },
   rejected: { label: "Rejected", color: "bg-destructive/10 text-destructive", icon: XCircle },
 };
 
@@ -37,13 +41,13 @@ export default function JobTracker() {
 
   return (
     <div className="flex gap-4 h-[calc(100vh-8rem)] max-w-6xl">
-      {/* Job List */}
-      <div className="w-80 shrink-0 glass-card overflow-y-auto">
+      {/* Job List - Scrollable */}
+      <div className="w-80 shrink-0 glass-card flex flex-col">
         <div className="p-3 border-b border-border">
           <h2 className="text-sm font-semibold text-foreground">Job Applications</h2>
           <p className="text-xs text-muted-foreground mt-0.5">{jobs.length} tracked</p>
         </div>
-        <div className="divide-y divide-border">
+        <div className="flex-1 overflow-y-auto p-2 space-y-2">
           {jobs.map((job) => {
             const isActive = selectedJob.id === job.id;
             const cfg = statusConfig[job.status];
@@ -51,16 +55,24 @@ export default function JobTracker() {
               <button
                 key={job.id}
                 onClick={() => setSelectedJob(job)}
-                className={`w-full text-left p-3 transition-colors ${isActive ? "bg-secondary" : "hover:bg-secondary/50"}`}
+                className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
+                  isActive
+                    ? "border-primary/40 bg-primary/5 shadow-md shadow-primary/5"
+                    : "border-border bg-card hover:border-muted-foreground/20 hover:bg-secondary/50"
+                }`}
               >
-                <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center justify-between mb-1.5">
                   <span className="text-sm font-medium text-foreground truncate">{job.title}</span>
-                  <ChevronRight className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${isActive ? "rotate-90" : ""}`} />
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ml-2 ${cfg.color}`}>{cfg.label}</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{job.company}</span>
-                  <span>·</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${cfg.color}`}>{cfg.label}</span>
+                <p className="text-xs text-muted-foreground mb-2">{job.company} · {job.location}</p>
+                <div className="flex flex-wrap gap-1">
+                  {job.skills.slice(0, 3).map((skill) => (
+                    <span key={skill} className="px-1.5 py-0.5 bg-secondary text-[10px] text-muted-foreground rounded">{skill}</span>
+                  ))}
+                  {job.skills.length > 3 && (
+                    <span className="px-1.5 py-0.5 text-[10px] text-muted-foreground">+{job.skills.length - 3}</span>
+                  )}
                 </div>
               </button>
             );
@@ -109,17 +121,36 @@ export default function JobTracker() {
           </div>
 
           <div className="p-5 space-y-5">
+            {/* Description */}
+            <section>
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Description</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{selectedJob.description}</p>
+            </section>
+
             {/* Overview */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Overview</h3>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="surface-2 rounded-md p-3">
-                  <span className="text-xs text-muted-foreground">Salary Range</span>
-                  <p className="text-sm font-medium text-foreground mt-0.5">{selectedJob.salary}</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <DollarSign className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Salary</span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground">{selectedJob.salary}</p>
                 </div>
                 <div className="surface-2 rounded-md p-3">
-                  <span className="text-xs text-muted-foreground">Type</span>
-                  <p className="text-sm font-medium text-foreground mt-0.5">Full-time</p>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Calendar className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Deadline</span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground">{selectedJob.deadline}</p>
+                </div>
+                <div className="surface-2 rounded-md p-3">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Briefcase className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Type</span>
+                  </div>
+                  <p className="text-sm font-medium text-foreground">Full-time</p>
                 </div>
               </div>
             </section>
