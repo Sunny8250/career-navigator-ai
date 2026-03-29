@@ -3,8 +3,16 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import { AppLayout } from "@/components/layout/AppLayout";
+import Dashboard from "./pages/Dashboard";
+import JobTracker from "./pages/JobTracker";
+import ResumeGenerator from "./pages/ResumeGenerator";
+import InterviewPrep from "./pages/InterviewPrep";
+import CodingPractice from "./pages/CodingPractice";
+import AdminPanel from "./pages/AdminPanel";
+import Pricing from "./pages/Pricing";
+import Auth from "./pages/Auth";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -15,8 +23,16 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="/auth" element={<Auth />} />
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/jobs" element={<JobTracker />} />
+            <Route path="/resume" element={<ResumeGenerator />} />
+            <Route path="/interview" element={<InterviewPrep />} />
+            <Route path="/coding" element={<CodingPractice />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/pricing" element={<Pricing />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
