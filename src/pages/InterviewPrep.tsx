@@ -1,23 +1,38 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Send, Bot, User, BarChart3, ChevronRight } from "lucide-react";
+import { Sparkles, Send, Bot, User, BarChart3, Star } from "lucide-react";
 
 interface Message {
   role: "ai" | "user";
   content: string;
+  score?: number;
 }
+
+const categories = ["Behavioral", "Technical", "System Design", "Coding"];
 
 const initialMessages: Message[] = [
   { role: "ai", content: "Welcome! I'll be your interviewer today. Let's start with a behavioral question.\n\nTell me about a time you had to work under a tight deadline. How did you handle it?" },
 ];
 
-const difficultyLevels = ["Easy", "Medium", "Hard"];
+const skillBreakdown = [
+  { label: "Communication", score: 80 },
+  { label: "Problem Solving", score: 70 },
+  { label: "Technical Depth", score: 65 },
+  { label: "STAR Method", score: 75 },
+  { label: "Confidence", score: 85 },
+];
+
+const questionProgress = [
+  { category: "Behavioral", done: 3, total: 5 },
+  { category: "Technical", done: 1, total: 4 },
+  { category: "System Design", done: 0, total: 3 },
+  { category: "Coding", done: 0, total: 3 },
+];
 
 export default function InterviewPrep() {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
-  const [difficulty, setDifficulty] = useState(1);
-  const [showFeedback, setShowFeedback] = useState(false);
+  const [activeCategory, setActiveCategory] = useState(0);
 
   const handleSend = () => {
     if (!input.trim()) return;
@@ -29,6 +44,7 @@ export default function InterviewPrep() {
         {
           role: "ai",
           content: "Good answer! You clearly demonstrated time management skills. To strengthen this, try using the STAR method more explicitly — especially the Result part.\n\nNext question: How do you approach debugging a complex issue in production?",
+          score: 7,
         },
       ]);
     }, 1200);
@@ -38,30 +54,27 @@ export default function InterviewPrep() {
     <div className="max-w-6xl flex gap-4 h-[calc(100vh-8rem)]">
       {/* Chat */}
       <div className="flex-1 glass-card flex flex-col">
-        {/* Header */}
-        <div className="p-4 border-b border-border flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-foreground">Mock Interview</h2>
-            <p className="text-xs text-muted-foreground">Behavioral · Question 1 of 5</p>
+        {/* Header with Category Tabs */}
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">Mock Interview</h2>
+              <p className="text-xs text-muted-foreground">Question 1 of 5</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            {difficultyLevels.map((level, i) => (
-              <button
-                key={level}
-                onClick={() => setDifficulty(i)}
-                className={`text-xs px-2 py-1 rounded ${difficulty === i ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground bg-secondary"} transition-colors`}
-              >
-                {level}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Progress */}
-        <div className="px-4 py-2 border-b border-border">
           <div className="flex gap-1">
-            {[1, 2, 3, 4, 5].map((step) => (
-              <div key={step} className={`h-1 flex-1 rounded-full ${step <= 1 ? "bg-primary" : "bg-muted"}`} />
+            {categories.map((cat, i) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(i)}
+                className={`text-xs px-3 py-1.5 rounded-md transition-colors ${
+                  activeCategory === i
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground bg-secondary"
+                }`}
+              >
+                {cat}
+              </button>
             ))}
           </div>
         </div>
@@ -78,8 +91,16 @@ export default function InterviewPrep() {
               <div className={`p-1.5 rounded-md shrink-0 h-fit ${msg.role === "ai" ? "bg-primary/10" : "bg-secondary"}`}>
                 {msg.role === "ai" ? <Bot className="h-4 w-4 text-primary" /> : <User className="h-4 w-4 text-muted-foreground" />}
               </div>
-              <div className={`max-w-[75%] p-3 rounded-lg text-sm ${msg.role === "ai" ? "surface-2 text-foreground" : "bg-primary/10 text-foreground"}`}>
-                <p className="whitespace-pre-line">{msg.content}</p>
+              <div className="max-w-[75%] space-y-2">
+                <div className={`p-3 rounded-lg text-sm ${msg.role === "ai" ? "surface-2 text-foreground" : "bg-primary/10 text-foreground"}`}>
+                  <p className="whitespace-pre-line">{msg.content}</p>
+                </div>
+                {msg.score && (
+                  <div className="flex items-center gap-1.5 px-2">
+                    <Star className="h-3 w-3 text-warning" />
+                    <span className="text-xs font-medium text-warning">{msg.score}/10</span>
+                  </div>
+                )}
               </div>
             </motion.div>
           ))}
@@ -103,63 +124,65 @@ export default function InterviewPrep() {
         </div>
       </div>
 
-      {/* Feedback Panel */}
-      <div className="w-72 shrink-0 space-y-4">
-        <button
-          onClick={() => setShowFeedback(!showFeedback)}
-          className="w-full glass-card-hover p-4 text-left"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4 text-primary" />
-              <span className="text-sm font-medium text-foreground">Feedback</span>
-            </div>
-            <ChevronRight className={`h-4 w-4 text-muted-foreground transition-transform ${showFeedback ? "rotate-90" : ""}`} />
+      {/* Right Feedback Panel */}
+      <div className="w-72 shrink-0 space-y-4 overflow-y-auto">
+        {/* Overall Score */}
+        <div className="glass-card p-4">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Session Feedback</h4>
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm text-muted-foreground">Overall Score</span>
+            <span className="text-2xl font-bold text-foreground">7.5<span className="text-sm text-muted-foreground font-normal">/10</span></span>
           </div>
-        </button>
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <div className="h-full w-3/4 bg-success rounded-full" />
+          </div>
+        </div>
 
-        {showFeedback && (
-          <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="glass-card p-4 space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-muted-foreground">Overall Score</span>
-                <span className="text-lg font-semibold text-foreground">7.5<span className="text-xs text-muted-foreground">/10</span></span>
-              </div>
-              <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-                <div className="h-full w-3/4 bg-success rounded-full" />
-              </div>
-            </div>
-
-            {[
-              { label: "Clarity", score: 8 },
-              { label: "Structure", score: 7 },
-              { label: "Confidence", score: 7.5 },
-            ].map((item) => (
-              <div key={item.label} className="flex items-center justify-between text-xs">
-                <span className="text-muted-foreground">{item.label}</span>
-                <span className="text-foreground font-medium">{item.score}/10</span>
+        {/* Skill Breakdown */}
+        <div className="glass-card p-4">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Skill Breakdown</h4>
+          <div className="space-y-3">
+            {skillBreakdown.map((skill) => (
+              <div key={skill.label}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs text-foreground">{skill.label}</span>
+                  <span className="text-xs text-muted-foreground">{skill.score}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${skill.score}%` }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className={`h-full rounded-full ${skill.score >= 80 ? "bg-success" : skill.score >= 60 ? "bg-warning" : "bg-destructive"}`}
+                  />
+                </div>
               </div>
             ))}
-
-            <div className="p-3 surface-2 rounded-md">
-              <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles className="h-3 w-3 text-primary" />
-                <span className="text-xs font-medium text-primary">AI Suggestion</span>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Use more specific metrics when describing impact. Instead of "improved performance," say "reduced load time by 40%."
-              </p>
-            </div>
-          </motion.div>
-        )}
-
-        <div className="glass-card p-4">
-          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Session Stats</h4>
-          <div className="space-y-2 text-xs">
-            <div className="flex justify-between"><span className="text-muted-foreground">Duration</span><span className="text-foreground">12 min</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Questions</span><span className="text-foreground">1 / 5</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Avg Response</span><span className="text-foreground">45 sec</span></div>
           </div>
+        </div>
+
+        {/* Question Progress */}
+        <div className="glass-card p-4">
+          <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Question Progress</h4>
+          <div className="space-y-2">
+            {questionProgress.map((qp) => (
+              <div key={qp.category} className="flex items-center justify-between text-xs">
+                <span className="text-foreground">{qp.category}</span>
+                <span className="text-muted-foreground font-mono">{qp.done}/{qp.total}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* AI Suggestion */}
+        <div className="glass-card p-4">
+          <div className="flex items-center gap-1.5 mb-2">
+            <Sparkles className="h-3.5 w-3.5 text-primary" />
+            <span className="text-xs font-medium text-primary">AI Suggestion</span>
+          </div>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            Use more specific metrics when describing impact. Instead of "improved performance," say "reduced load time by 40%."
+          </p>
         </div>
       </div>
     </div>
