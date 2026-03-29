@@ -51,7 +51,7 @@ export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [chartFilter, setChartFilter] = useState(2);
   const [userFilter, setUserFilter] = useState("all");
-  const [jobQueue, setJobQueue] = useState(pendingJobs.map(j => ({ ...j })));
+  const [jobQueue, setJobQueue] = useState(pendingJobs.map(j => ({ ...j, status: j.status as "pending" | "approved" | "rejected" })));
 
   const handleJobAction = (id: number, action: "approved" | "rejected") => {
     setJobQueue(prev => prev.map(j => j.id === id ? { ...j, status: action } : j));
