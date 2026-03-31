@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
-import { Play, Sparkles, Lightbulb, BookOpen, Clock, CheckCircle2, XCircle, Plus } from "lucide-react";
+import { Play, Sparkles, Lightbulb, BookOpen, Clock, CheckCircle2, XCircle, Plus, Timer, ChevronDown } from "lucide-react";
 
 const sampleTestCases = [
   { input: "nums = [2,7,11,15], target = 9", expected: "[0,1]" },
@@ -8,23 +8,47 @@ const sampleTestCases = [
   { input: "nums = [3,3], target = 6", expected: "[0,1]" },
 ];
 
+const difficulties = [
+  { label: "Easy", color: "bg-success/10 text-success" },
+  { label: "Medium", color: "bg-warning/10 text-warning" },
+  { label: "Hard", color: "bg-destructive/10 text-destructive" },
+];
+
+const languages = ["JavaScript", "Python", "TypeScript", "Java", "C++"];
+
 export default function CodingPractice() {
   const [showHint, setShowHint] = useState(false);
   const [code, setCode] = useState(`function twoSum(nums, target) {\n  // Your solution here\n  \n}`);
-  const [output, setOutput] = useState("");
   const [activeTab, setActiveTab] = useState<"description" | "testcases" | "output">("description");
   const [results, setResults] = useState<{ passed: boolean; input: string; expected: string; got: string }[]>([]);
   const [customInput, setCustomInput] = useState("");
   const [customExpected, setCustomExpected] = useState("");
+  const [difficulty, setDifficulty] = useState(1);
+  const [language, setLanguage] = useState("JavaScript");
+  const [showLangMenu, setShowLangMenu] = useState(false);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    if (!timerRunning) return;
+    const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(interval);
+  }, [timerRunning]);
+
+  const formatTime = useCallback((s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+  }, []);
 
   const handleRun = () => {
-    const mockResults = [
-      { passed: false, input: sampleTestCases[0].input, expected: "[0,1]", got: "undefined" },
-      { passed: false, input: sampleTestCases[1].input, expected: "[1,2]", got: "undefined" },
-      { passed: false, input: sampleTestCases[2].input, expected: "[0,1]", got: "undefined" },
-    ];
+    const mockResults = sampleTestCases.map((tc) => ({
+      passed: false,
+      input: tc.input,
+      expected: tc.expected,
+      got: "undefined",
+    }));
     setResults(mockResults);
-    setOutput(`Running...\n\n❌ 0/${mockResults.length} test cases passed`);
     setActiveTab("output");
   };
 
@@ -35,7 +59,6 @@ export default function CodingPractice() {
     <div className="max-w-6xl flex gap-4 h-[calc(100vh-8rem)]">
       {/* Left: Problem + Tabs */}
       <div className="w-96 shrink-0 glass-card flex flex-col">
-        {/* Tabs */}
         <div className="flex border-b border-border">
           {tabs.map((tab) => (
             <button
@@ -56,7 +79,20 @@ export default function CodingPractice() {
           {activeTab === "description" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="px-2 py-0.5 bg-warning/10 text-warning text-xs rounded font-medium">Medium</span>
+                {/* Difficulty Selector */}
+                <div className="flex gap-1">
+                  {difficulties.map((d, i) => (
+                    <button
+                      key={d.label}
+                      onClick={() => setDifficulty(i)}
+                      className={`px-2 py-0.5 text-[10px] rounded font-medium transition-all ${
+                        difficulty === i ? d.color + " ring-1 ring-current" : "bg-secondary text-muted-foreground"
+                      }`}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground">
                   <Clock className="h-3 w-3" />
                   <span>~20 min</span>
@@ -94,7 +130,7 @@ export default function CodingPractice() {
                 {showHint && (
                   <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="p-3 surface-2 rounded-md">
                     <p className="text-xs text-muted-foreground">
-                      Think about using a <span className="text-primary">hash map</span> to store each number's complement. For each element, check if its complement already exists in the map.
+                      Think about using a <span className="text-primary">hash map</span> to store each number's complement.
                     </p>
                   </motion.div>
                 )}
@@ -128,8 +164,6 @@ export default function CodingPractice() {
                   </div>
                 </div>
               ))}
-
-              {/* Custom Test Case */}
               <div className="border-t border-border pt-3">
                 <h4 className="text-xs font-medium text-foreground mb-2 flex items-center gap-1.5">
                   <Plus className="h-3 w-3" />
@@ -184,11 +218,63 @@ export default function CodingPractice() {
         </div>
       </div>
 
-      {/* Right: Editor + Output */}
+      {/* Right: Editor */}
       <div className="flex-1 flex flex-col gap-4">
         <div className="flex-1 glass-card flex flex-col">
           <div className="p-3 border-b border-border flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-mono">solution.js</span>
+            <div className="flex items-center gap-3">
+              {/* Language Selector */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowLangMenu(!showLangMenu)}
+                  className="flex items-center gap-1.5 text-xs text-muted-foreground font-mono bg-secondary px-2.5 py-1 rounded-md hover:text-foreground transition-colors"
+                >
+                  {language}
+                  <ChevronDown className="h-3 w-3" />
+                </button>
+                {showLangMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full left-0 mt-1 glass-card shadow-lg z-10 py-1 min-w-[120px]"
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang}
+                        onClick={() => { setLanguage(lang); setShowLangMenu(false); }}
+                        className={`w-full text-left px-3 py-1.5 text-xs transition-colors ${
+                          language === lang ? "text-primary bg-primary/10" : "text-muted-foreground hover:text-foreground hover:bg-secondary"
+                        }`}
+                      >
+                        {lang}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+
+              {/* Timer */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => setTimerRunning(!timerRunning)}
+                  className={`p-1 rounded transition-colors ${timerRunning ? "text-warning" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Timer className="h-3.5 w-3.5" />
+                </button>
+                <span className={`text-xs font-mono ${timerRunning ? "text-warning" : "text-muted-foreground"}`}>
+                  {formatTime(seconds)}
+                </span>
+                {seconds > 0 && (
+                  <button
+                    onClick={() => { setSeconds(0); setTimerRunning(false); }}
+                    className="text-[10px] text-muted-foreground hover:text-foreground"
+                  >
+                    Reset
+                  </button>
+                )}
+              </div>
+            </div>
+
             <button
               onClick={handleRun}
               className="flex items-center gap-1.5 text-xs font-medium bg-success text-success-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-opacity"

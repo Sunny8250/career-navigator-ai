@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Briefcase, MapPin, Clock, ExternalLink, Sparkles, FileText,
-  MessageSquare, ChevronRight, CheckCircle2, XCircle, AlertCircle, Calendar, DollarSign
+  MessageSquare, CheckCircle2, XCircle, AlertCircle, Calendar, DollarSign, Search
 } from "lucide-react";
 
 interface Job {
@@ -36,47 +36,103 @@ const statusConfig = {
   rejected: { label: "Rejected", color: "bg-destructive/10 text-destructive", icon: XCircle },
 };
 
+const statusFilters = [
+  { key: "all", label: "All" },
+  { key: "applied", label: "Applied" },
+  { key: "interview", label: "Interview" },
+  { key: "saved", label: "Saved" },
+  { key: "rejected", label: "Rejected" },
+] as const;
+
 export default function JobTracker() {
   const [selectedJob, setSelectedJob] = useState<Job>(jobs[0]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  const filteredJobs = useMemo(() => {
+    return jobs.filter((job) => {
+      const matchesSearch =
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.skills.some((s) => s.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesStatus = statusFilter === "all" || job.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+  }, [searchQuery, statusFilter]);
 
   return (
     <div className="flex gap-4 h-[calc(100vh-8rem)] max-w-6xl">
-      {/* Job List - Scrollable */}
+      {/* Job List */}
       <div className="w-80 shrink-0 glass-card flex flex-col">
-        <div className="p-3 border-b border-border">
-          <h2 className="text-sm font-semibold text-foreground">Job Applications</h2>
-          <p className="text-xs text-muted-foreground mt-0.5">{jobs.length} tracked</p>
-        </div>
-        <div className="flex-1 overflow-y-auto p-2 space-y-2">
-          {jobs.map((job) => {
-            const isActive = selectedJob.id === job.id;
-            const cfg = statusConfig[job.status];
-            return (
+        <div className="p-3 border-b border-border space-y-2.5">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold text-foreground">Job Applications</h2>
+            <span className="text-xs text-muted-foreground">{filteredJobs.length} jobs</span>
+          </div>
+          {/* Search */}
+          <div className="flex items-center gap-2 bg-secondary rounded-md px-2.5 py-1.5">
+            <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+            <input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search jobs..."
+              className="bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none w-full"
+            />
+          </div>
+          {/* Status Filters */}
+          <div className="flex gap-1 flex-wrap">
+            {statusFilters.map((f) => (
               <button
-                key={job.id}
-                onClick={() => setSelectedJob(job)}
-                className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
-                  isActive
-                    ? "border-primary/40 bg-primary/5 shadow-md shadow-primary/5"
-                    : "border-border bg-card hover:border-muted-foreground/20 hover:bg-secondary/50"
+                key={f.key}
+                onClick={() => setStatusFilter(f.key)}
+                className={`text-[10px] px-2 py-1 rounded transition-colors ${
+                  statusFilter === f.key
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:text-foreground"
                 }`}
               >
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-sm font-medium text-foreground truncate">{job.title}</span>
-                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ml-2 ${cfg.color}`}>{cfg.label}</span>
-                </div>
-                <p className="text-xs text-muted-foreground mb-2">{job.company} · {job.location}</p>
-                <div className="flex flex-wrap gap-1">
-                  {job.skills.slice(0, 3).map((skill) => (
-                    <span key={skill} className="px-1.5 py-0.5 bg-secondary text-[10px] text-muted-foreground rounded">{skill}</span>
-                  ))}
-                  {job.skills.length > 3 && (
-                    <span className="px-1.5 py-0.5 text-[10px] text-muted-foreground">+{job.skills.length - 3}</span>
-                  )}
-                </div>
+                {f.label}
               </button>
-            );
-          })}
+            ))}
+          </div>
+        </div>
+        <div className="flex-1 overflow-y-auto p-2 space-y-2">
+          {filteredJobs.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Search className="h-6 w-6 text-muted-foreground mb-2" />
+              <p className="text-xs text-muted-foreground">No jobs found</p>
+            </div>
+          ) : (
+            filteredJobs.map((job) => {
+              const isActive = selectedJob.id === job.id;
+              const cfg = statusConfig[job.status];
+              return (
+                <button
+                  key={job.id}
+                  onClick={() => setSelectedJob(job)}
+                  className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
+                    isActive
+                      ? "border-primary/40 bg-primary/5 shadow-md shadow-primary/5"
+                      : "border-border bg-card hover:border-muted-foreground/20 hover:bg-secondary/50"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-medium text-foreground truncate">{job.title}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium shrink-0 ml-2 ${cfg.color}`}>{cfg.label}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2">{job.company} · {job.location}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {job.skills.slice(0, 3).map((skill) => (
+                      <span key={skill} className="px-1.5 py-0.5 bg-secondary text-[10px] text-muted-foreground rounded">{skill}</span>
+                    ))}
+                    {job.skills.length > 3 && (
+                      <span className="px-1.5 py-0.5 text-[10px] text-muted-foreground">+{job.skills.length - 3}</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -104,8 +160,6 @@ export default function JobTracker() {
                 {statusConfig[selectedJob.status].label}
               </span>
             </div>
-
-            {/* Quick Actions */}
             <div className="flex gap-2 mt-4">
               {[
                 { icon: FileText, label: "Generate Resume" },
@@ -121,13 +175,10 @@ export default function JobTracker() {
           </div>
 
           <div className="p-5 space-y-5">
-            {/* Description */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Description</h3>
               <p className="text-sm text-muted-foreground leading-relaxed">{selectedJob.description}</p>
             </section>
-
-            {/* Overview */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Overview</h3>
               <div className="grid grid-cols-3 gap-3">
@@ -154,8 +205,6 @@ export default function JobTracker() {
                 </div>
               </div>
             </section>
-
-            {/* Skills */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Required Skills</h3>
               <div className="flex flex-wrap gap-1.5">
@@ -164,8 +213,6 @@ export default function JobTracker() {
                 ))}
               </div>
             </section>
-
-            {/* Eligibility */}
             <section>
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
                 <Sparkles className="h-3.5 w-3.5 text-primary" />
