@@ -2,6 +2,7 @@ import { useState } from "react";
 import { User, Bell, Palette, Shield, Save, Camera, Mail, Phone, MapPin, Briefcase, Globe, BellRing, BellOff, MessageSquare, FileText, Zap, Sun, Moon, Monitor } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { useTheme } from "@/hooks/use-theme";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
@@ -228,7 +229,7 @@ function NotificationsSection() {
 }
 
 function AppearanceSection() {
-  const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
+  const { theme, setTheme } = useTheme();
   const [fontSize, setFontSize] = useState<"small" | "medium" | "large">("medium");
   const [sidebarCompact, setSidebarCompact] = useState(false);
 
