@@ -21,27 +21,29 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <CommandPalette />
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route element={<AppLayout />}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/jobs" element={<JobTracker />} />
-            <Route path="/resume" element={<ResumeGenerator />} />
-            <Route path="/interview" element={<InterviewPrep />} />
-            <Route path="/coding" element={<CodingPractice />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/pricing" element={<Pricing />} />
-          </Route>
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <CommandPalette />
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            <Route element={<AppLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/jobs" element={<JobTracker />} />
+              <Route path="/resume" element={<ResumeGenerator />} />
+              <Route path="/interview" element={<InterviewPrep />} />
+              <Route path="/coding" element={<CodingPractice />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/pricing" element={<Pricing />} />
+            </Route>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

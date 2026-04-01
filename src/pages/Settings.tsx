@@ -230,7 +230,7 @@ function NotificationsSection() {
 }
 
 function AppearanceSection() {
-  const [theme, setTheme] = useState<"dark" | "light" | "system">("dark");
+  const { theme, setTheme } = useTheme();
   const [fontSize, setFontSize] = useState<"small" | "medium" | "large">("medium");
   const [sidebarCompact, setSidebarCompact] = useState(false);
 
