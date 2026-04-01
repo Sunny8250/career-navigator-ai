@@ -5,7 +5,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
-  :root {
+  :root, .dark {
     --background: 228 14% 7%;
     --foreground: 210 20% 92%;
 
@@ -58,6 +58,59 @@
 
     --gradient-primary: linear-gradient(135deg, hsl(217 91% 60%), hsl(230 91% 65%));
     --gradient-card: linear-gradient(180deg, hsl(228 12% 11%), hsl(228 12% 9%));
+  }
+
+  .light {
+    --background: 0 0% 98%;
+    --foreground: 228 14% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 228 14% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 14% 12%;
+
+    --primary: 217 91% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 14% 94%;
+    --secondary-foreground: 228 14% 30%;
+
+    --muted: 220 14% 92%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 220 14% 94%;
+    --accent-foreground: 228 14% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 217 91% 55%;
+
+    --sidebar-background: 0 0% 97%;
+    --sidebar-foreground: 215 15% 45%;
+    --sidebar-primary: 217 91% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 94%;
+    --sidebar-accent-foreground: 228 14% 12%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 217 91% 55%;
+
+    --success: 142 71% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 45%;
+    --warning-foreground: 0 0% 100%;
+    --info: 199 89% 44%;
+    --info-foreground: 0 0% 100%;
+
+    --surface-1: 0 0% 100%;
+    --surface-2: 220 14% 96%;
+    --surface-3: 220 14% 93%;
+
+    --gradient-primary: linear-gradient(135deg, hsl(217 91% 55%), hsl(230 91% 60%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 14% 97%));
   }
 }
 
