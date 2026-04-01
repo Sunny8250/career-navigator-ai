@@ -3,7 +3,6 @@ import { User, Bell, Palette, Shield, Save, Camera, Mail, Phone, MapPin, Briefca
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
-import { toast } from "sonner";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
