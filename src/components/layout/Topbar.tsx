@@ -62,7 +62,7 @@ export function Topbar() {
     : [
         { icon: User, label: "Profile", onClick: () => navigate("/auth") },
         { icon: CreditCard, label: "Billing & Plan", onClick: () => navigate("/pricing") },
-        { icon: Settings, label: "Settings" },
+        { icon: Settings, label: "Settings", onClick: () => navigate("/settings") },
         { icon: Moon, label: "Appearance" },
       ];
 
