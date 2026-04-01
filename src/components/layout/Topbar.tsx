@@ -62,13 +62,13 @@ export function Topbar() {
     : [
         { icon: User, label: "Profile", onClick: () => navigate("/auth") },
         { icon: CreditCard, label: "Billing & Plan", onClick: () => navigate("/pricing") },
-        { icon: Settings, label: "Settings" },
+        { icon: Settings, label: "Settings", onClick: () => navigate("/settings") },
         { icon: Moon, label: "Appearance" },
       ];
 
   const secondaryItems = isAdmin
     ? [
-        { icon: Settings, label: "Platform Settings" },
+        { icon: Settings, label: "Platform Settings", onClick: () => navigate("/settings") },
         { icon: HelpCircle, label: "Help & Support" },
       ]
     : [

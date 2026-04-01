@@ -13,6 +13,7 @@ import CodingPractice from "./pages/CodingPractice";
 import AdminPanel from "./pages/AdminPanel";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -33,6 +34,7 @@ const App = () => (
             <Route path="/interview" element={<InterviewPrep />} />
             <Route path="/coding" element={<CodingPractice />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/pricing" element={<Pricing />} />
           </Route>
           <Route path="*" element={<NotFound />} />
