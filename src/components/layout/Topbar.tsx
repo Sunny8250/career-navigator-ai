@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Bell, Zap, User, Settings, CreditCard, LogOut, Moon, HelpCircle, Shield } from "lucide-react";
+import { Search, Bell, Zap, User, Settings, CreditCard, LogOut, Moon, HelpCircle, Shield, Crown, BarChart3, Users, FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -10,12 +10,32 @@ const notifications = [
   { id: 4, text: "AI suggestion: Practice system design", time: "1d ago", unread: false },
 ];
 
+// Simulated role — swap to "user" to test
+const CURRENT_USER_ROLE: "admin" | "user" = "admin";
+
+const adminUser = {
+  name: "Alex Johnson",
+  email: "alex@careerai.io",
+  plan: "Admin",
+  credits: "Unlimited",
+};
+
+const regularUser = {
+  name: "Alex Johnson",
+  email: "alex@careerai.io",
+  plan: "Pro Plan",
+  credits: "3 AI credits left",
+};
+
 export function Topbar() {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const notifRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+
+  const isAdmin = CURRENT_USER_ROLE === "admin";
+  const currentUser = isAdmin ? adminUser : regularUser;
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -31,6 +51,29 @@ export function Topbar() {
   }, []);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
+
+  const userMenuItems = isAdmin
+    ? [
+        { icon: Shield, label: "Admin Dashboard", onClick: () => navigate("/admin"), accent: true },
+        { icon: Users, label: "Manage Users", onClick: () => navigate("/admin") },
+        { icon: BarChart3, label: "Analytics", onClick: () => navigate("/admin") },
+        { icon: FileText, label: "Audit Logs", onClick: () => navigate("/admin") },
+      ]
+    : [
+        { icon: User, label: "Profile", onClick: () => navigate("/auth") },
+        { icon: CreditCard, label: "Billing & Plan", onClick: () => navigate("/pricing") },
+        { icon: Settings, label: "Settings" },
+        { icon: Moon, label: "Appearance" },
+      ];
+
+  const secondaryItems = isAdmin
+    ? [
+        { icon: Settings, label: "Platform Settings" },
+        { icon: HelpCircle, label: "Help & Support" },
+      ]
+    : [
+        { icon: HelpCircle, label: "Help & Support" },
+      ];
 
   return (
     <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
@@ -50,7 +93,7 @@ export function Topbar() {
         {/* Credits */}
         <div className="flex items-center gap-1.5 bg-secondary rounded-md px-2.5 py-1.5 text-xs">
           <Zap className="h-3.5 w-3.5 text-warning" />
-          <span className="text-muted-foreground">3 AI credits left</span>
+          <span className="text-muted-foreground">{currentUser.credits}</span>
         </div>
 
         {/* Notifications */}
@@ -112,8 +155,12 @@ export function Topbar() {
             onClick={() => setShowUserMenu(!showUserMenu)}
             className="flex items-center gap-2 p-1.5 rounded-md hover:bg-secondary transition-colors"
           >
-            <div className="h-7 w-7 rounded-full bg-primary/20 flex items-center justify-center">
-              <User className="h-3.5 w-3.5 text-primary" />
+            <div className={`h-7 w-7 rounded-full flex items-center justify-center ${isAdmin ? "bg-destructive/20" : "bg-primary/20"}`}>
+              {isAdmin ? (
+                <Crown className="h-3.5 w-3.5 text-destructive" />
+              ) : (
+                <User className="h-3.5 w-3.5 text-primary" />
+              )}
             </div>
           </button>
 
@@ -129,47 +176,47 @@ export function Topbar() {
                 {/* User info */}
                 <div className="p-3 border-b border-border">
                   <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center">
-                      <User className="h-4 w-4 text-primary" />
+                    <div className={`h-9 w-9 rounded-full flex items-center justify-center ${isAdmin ? "bg-destructive/20" : "bg-primary/20"}`}>
+                      {isAdmin ? (
+                        <Crown className="h-4 w-4 text-destructive" />
+                      ) : (
+                        <User className="h-4 w-4 text-primary" />
+                      )}
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-foreground">Alex Johnson</p>
-                      <p className="text-[11px] text-muted-foreground">alex@careerai.io</p>
+                      <p className="text-sm font-semibold text-foreground">{currentUser.name}</p>
+                      <p className="text-[11px] text-muted-foreground">{currentUser.email}</p>
                     </div>
                   </div>
                   <div className="mt-2 flex items-center gap-1.5 text-[10px]">
-                    <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded-full font-medium">Pro Plan</span>
-                    <span className="text-muted-foreground">· 3 AI credits left</span>
+                    <span className={`px-1.5 py-0.5 rounded-full font-medium ${isAdmin ? "bg-destructive/10 text-destructive" : "bg-primary/10 text-primary"}`}>
+                      {currentUser.plan}
+                    </span>
+                    {!isAdmin && <span className="text-muted-foreground">· {currentUser.credits}</span>}
                   </div>
                 </div>
 
                 {/* Menu items */}
                 <div className="p-1">
-                  {[
-                    { icon: User, label: "Profile", onClick: () => navigate("/auth") },
-                    { icon: CreditCard, label: "Billing & Plan", onClick: () => navigate("/pricing") },
-                    { icon: Settings, label: "Settings" },
-                    { icon: Moon, label: "Appearance" },
-                  ].map((item) => (
+                  {userMenuItems.map((item) => (
                     <button
                       key={item.label}
                       onClick={() => { setShowUserMenu(false); item.onClick?.(); }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-foreground rounded-md hover:bg-secondary transition-colors"
+                      className={`w-full flex items-center gap-2.5 px-3 py-2 text-xs rounded-md hover:bg-secondary transition-colors ${
+                        (item as any).accent ? "text-destructive font-medium" : "text-foreground"
+                      }`}
                     >
-                      <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
+                      <item.icon className={`h-3.5 w-3.5 ${(item as any).accent ? "text-destructive" : "text-muted-foreground"}`} />
                       {item.label}
                     </button>
                   ))}
                 </div>
 
                 <div className="border-t border-border p-1">
-                  {[
-                    { icon: HelpCircle, label: "Help & Support" },
-                    { icon: Shield, label: "Admin Panel", onClick: () => navigate("/admin") },
-                  ].map((item) => (
+                  {secondaryItems.map((item) => (
                     <button
                       key={item.label}
-                      onClick={() => { setShowUserMenu(false); item.onClick?.(); }}
+                      onClick={() => { setShowUserMenu(false); }}
                       className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-foreground rounded-md hover:bg-secondary transition-colors"
                     >
                       <item.icon className="h-3.5 w-3.5 text-muted-foreground" />
