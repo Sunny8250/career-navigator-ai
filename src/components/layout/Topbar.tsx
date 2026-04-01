@@ -68,7 +68,7 @@ export function Topbar() {
 
   const secondaryItems = isAdmin
     ? [
-        { icon: Settings, label: "Platform Settings" },
+        { icon: Settings, label: "Platform Settings", onClick: () => navigate("/settings") },
         { icon: HelpCircle, label: "Help & Support" },
       ]
     : [
