@@ -13,6 +13,7 @@ import CodingPractice from "./pages/CodingPractice";
 import AdminPanel from "./pages/AdminPanel";
 import Pricing from "./pages/Pricing";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
