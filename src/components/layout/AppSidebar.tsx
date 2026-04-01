@@ -22,6 +22,7 @@ const navItems = [
   { label: "Interview Prep", path: "/interview", icon: MessageSquare },
   { label: "Coding Practice", path: "/coding", icon: Code2 },
   { label: "Pricing", path: "/pricing", icon: CreditCard },
+  { label: "Settings", path: "/settings", icon: Settings },
   { label: "Admin", path: "/admin", icon: Shield },
 ];
 

@@ -34,6 +34,7 @@ const App = () => (
             <Route path="/interview" element={<InterviewPrep />} />
             <Route path="/coding" element={<CodingPractice />} />
             <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/settings" element={<Settings />} />
             <Route path="/pricing" element={<Pricing />} />
           </Route>
           <Route path="*" element={<NotFound />} />
