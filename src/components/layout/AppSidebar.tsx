@@ -9,6 +9,7 @@ import {
   Code2,
   CreditCard,
   Shield,
+  Settings,
   ChevronLeft,
   ChevronRight,
   Sparkles,
