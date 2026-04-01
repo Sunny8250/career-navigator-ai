@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Search, Bell, Zap, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Search, Bell, Zap, User, Settings, CreditCard, LogOut, Moon, HelpCircle, Shield } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 const notifications = [
