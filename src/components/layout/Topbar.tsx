@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Bell, Zap, User, Settings, CreditCard, LogOut, Moon, HelpCircle, Shield, Crown, BarChart3, Users, FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "./ThemeToggle";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const notifications = [
   { id: 1, text: "Your resume ATS score improved to 87%", time: "2m ago", unread: true },
@@ -33,6 +35,7 @@ export function Topbar() {
   const notifRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const isAdmin = CURRENT_USER_ROLE === "admin";
   const currentUser = isAdmin ? adminUser : regularUser;
@@ -76,25 +79,32 @@ export function Topbar() {
       ];
 
   return (
-    <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
-      {/* Search */}
-      <div className="flex items-center gap-2 bg-secondary rounded-md px-3 py-1.5 w-72">
-        <Search className="h-3.5 w-3.5 text-muted-foreground" />
+    <header className="h-14 border-b border-border flex items-center justify-between px-4 md:px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+      {/* Search - hidden on mobile, or smaller */}
+      <div className={`flex items-center gap-2 bg-secondary rounded-md px-3 py-1.5 ${isMobile ? "ml-10 flex-1 max-w-[200px]" : "w-72"}`}>
+        <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         <input
           type="text"
-          placeholder="Search jobs, skills, actions..."
+          placeholder={isMobile ? "Search..." : "Search jobs, skills, actions..."}
           className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
         />
-        <kbd className="hidden sm:inline text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+        {!isMobile && (
+          <kbd className="hidden sm:inline text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+        )}
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-3">
-        {/* Credits */}
-        <div className="flex items-center gap-1.5 bg-secondary rounded-md px-2.5 py-1.5 text-xs">
-          <Zap className="h-3.5 w-3.5 text-warning" />
-          <span className="text-muted-foreground">{currentUser.credits}</span>
-        </div>
+      <div className="flex items-center gap-1.5 md:gap-3">
+        {/* Credits - hide on mobile */}
+        {!isMobile && (
+          <div className="flex items-center gap-1.5 bg-secondary rounded-md px-2.5 py-1.5 text-xs">
+            <Zap className="h-3.5 w-3.5 text-warning" />
+            <span className="text-muted-foreground">{currentUser.credits}</span>
+          </div>
+        )}
+
+        {/* Theme Toggle */}
+        <ThemeToggle />
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>

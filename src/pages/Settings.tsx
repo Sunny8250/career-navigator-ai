@@ -24,7 +24,7 @@ export default function Settings() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit overflow-x-auto max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -93,7 +93,7 @@ function ProfileSection() {
       {/* Info */}
       <div className="glass-card p-5 space-y-4">
         <h3 className="text-sm font-semibold text-foreground">Personal Information</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field icon={User} label="Full Name" value={form.name} onChange={(v) => update("name", v)} />
           <Field icon={Mail} label="Email" value={form.email} onChange={(v) => update("email", v)} />
           <Field icon={Phone} label="Phone" value={form.phone} onChange={(v) => update("phone", v)} />
