@@ -35,6 +35,7 @@ export function Topbar() {
   const notifRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   const isAdmin = CURRENT_USER_ROLE === "admin";
   const currentUser = isAdmin ? adminUser : regularUser;
