@@ -24,7 +24,7 @@ export default function Settings() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit">
+      <div className="flex gap-1 bg-secondary/50 rounded-lg p-1 w-fit overflow-x-auto max-w-full">
         {tabs.map((tab) => (
           <button
             key={tab.id}
