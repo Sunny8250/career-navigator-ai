@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { Search, Bell, Zap, User, Settings, CreditCard, LogOut, Moon, HelpCircle, Shield, Crown, BarChart3, Users, FileText } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ThemeToggle } from "./ThemeToggle";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const notifications = [
   { id: 1, text: "Your resume ATS score improved to 87%", time: "2m ago", unread: true },
