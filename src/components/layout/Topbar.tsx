@@ -78,16 +78,18 @@ export function Topbar() {
       ];
 
   return (
-    <header className="h-14 border-b border-border flex items-center justify-between px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
-      {/* Search */}
-      <div className="flex items-center gap-2 bg-secondary rounded-md px-3 py-1.5 w-72">
-        <Search className="h-3.5 w-3.5 text-muted-foreground" />
+    <header className="h-14 border-b border-border flex items-center justify-between px-4 md:px-6 bg-background/80 backdrop-blur-sm sticky top-0 z-20">
+      {/* Search - hidden on mobile, or smaller */}
+      <div className={`flex items-center gap-2 bg-secondary rounded-md px-3 py-1.5 ${isMobile ? "ml-10 flex-1 max-w-[200px]" : "w-72"}`}>
+        <Search className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
         <input
           type="text"
-          placeholder="Search jobs, skills, actions..."
+          placeholder={isMobile ? "Search..." : "Search jobs, skills, actions..."}
           className="bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none w-full"
         />
-        <kbd className="hidden sm:inline text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+        {!isMobile && (
+          <kbd className="hidden sm:inline text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-mono">⌘K</kbd>
+        )}
       </div>
 
       {/* Right side */}
