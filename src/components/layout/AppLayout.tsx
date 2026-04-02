@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { AppSidebar } from "./AppSidebar";
 import { MobileSidebar } from "./MobileSidebar";
+import { BottomNav } from "./BottomNav";
 import { Topbar } from "./Topbar";
 import { useIsMobile } from "@/hooks/use-mobile";
 
@@ -12,10 +13,11 @@ export function AppLayout() {
       {isMobile ? <MobileSidebar /> : <AppSidebar />}
       <div className="flex-1 flex flex-col min-w-0">
         <Topbar />
-        <main className="flex-1 p-4 md:p-6 overflow-auto">
+        <main className="flex-1 p-4 md:p-6 overflow-auto pb-20 md:pb-6">
           <Outlet />
         </main>
       </div>
+      <BottomNav />
     </div>
   );
 }
