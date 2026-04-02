@@ -35,7 +35,7 @@ export default function Dashboard() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="glass-card border-primary/20 p-5 flex items-center justify-between"
+        className="glass-card border-primary/20 p-4 md:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
       >
         <div className="flex items-center gap-4">
           <div className="p-2.5 rounded-lg bg-primary/10">
