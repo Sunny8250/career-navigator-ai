@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRole } from "@/hooks/use-role";
 
 const notifications = [
   { id: 1, text: "Your resume ATS score improved to 87%", time: "2m ago", unread: true },
@@ -11,9 +12,6 @@ const notifications = [
   { id: 3, text: "Stripe application moved to Interview", time: "3h ago", unread: false },
   { id: 4, text: "AI suggestion: Practice system design", time: "1d ago", unread: false },
 ];
-
-// Simulated role — swap to "user" to test
-const CURRENT_USER_ROLE: "admin" | "user" = "admin";
 
 const adminUser = {
   name: "Alex Johnson",
@@ -37,7 +35,7 @@ export function Topbar() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const isAdmin = CURRENT_USER_ROLE === "admin";
+  const { isAdmin } = useRole();
   const currentUser = isAdmin ? adminUser : regularUser;
 
   useEffect(() => {

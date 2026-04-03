@@ -14,8 +14,9 @@ import {
   X,
   Sparkles,
 } from "lucide-react";
+import { useRole } from "@/hooks/use-role";
 
-const navItems = [
+const baseNavItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
   { label: "Job Tracker", path: "/jobs", icon: Briefcase },
   { label: "Resume", path: "/resume", icon: FileText },
@@ -23,13 +24,15 @@ const navItems = [
   { label: "Coding Practice", path: "/coding", icon: Code2 },
   { label: "Pricing", path: "/pricing", icon: CreditCard },
   { label: "Settings", path: "/settings", icon: Settings },
-  { label: "Admin", path: "/admin", icon: Shield },
 ];
+
+const adminNavItem = { label: "Admin", path: "/admin", icon: Shield };
 
 export function MobileSidebar() {
   const [open, setOpen] = useState(false);
   const location = useLocation();
-
+  const { isAdmin } = useRole();
+  const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
   return (
     <>
       {/* Hamburger button - fixed in top-left */}
