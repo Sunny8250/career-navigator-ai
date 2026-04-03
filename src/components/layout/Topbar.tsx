@@ -13,9 +13,6 @@ const notifications = [
   { id: 4, text: "AI suggestion: Practice system design", time: "1d ago", unread: false },
 ];
 
-// Simulated role — swap to "user" to test
-const CURRENT_USER_ROLE: "admin" | "user" = "admin";
-
 const adminUser = {
   name: "Alex Johnson",
   email: "alex@careerai.io",
