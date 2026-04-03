@@ -35,7 +35,7 @@ export function Topbar() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const isAdmin = CURRENT_USER_ROLE === "admin";
+  const { isAdmin } = useRole();
   const currentUser = isAdmin ? adminUser : regularUser;
 
   useEffect(() => {
