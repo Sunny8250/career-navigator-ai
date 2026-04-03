@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { User, Bell, Palette, Shield, Save, Camera, Mail, Phone, MapPin, Briefcase, Globe, BellRing, BellOff, MessageSquare, FileText, Zap, Sun, Moon, Monitor } from "lucide-react";
+import { User, Bell, Palette, Shield, Save, Camera, Mail, Phone, MapPin, Briefcase, Globe, BellRing, BellOff, MessageSquare, FileText, Zap, Sun, Moon, Monitor, Crown } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useTheme } from "@/hooks/use-theme";
+import { useRole } from "@/hooks/use-role";
 
 const tabs = [
   { id: "profile", label: "Profile", icon: User },
