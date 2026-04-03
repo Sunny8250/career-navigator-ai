@@ -314,8 +314,29 @@ function AppearanceSection() {
 }
 
 function AccountSection() {
+  const { role, setRole, isAdmin } = useRole();
+
   return (
     <div className="space-y-4">
+      {/* Role Switcher (Demo) */}
+      <div className="glass-card p-5">
+        <h3 className="text-sm font-semibold text-foreground mb-1">Role (Demo)</h3>
+        <p className="text-[10px] text-muted-foreground mb-3">Switch between admin and user to preview different experiences</p>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setRole("admin"); toast.success("Switched to Admin"); }}
+            className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-md transition-colors ${isAdmin ? "bg-destructive/10 text-destructive border border-destructive/30" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
+          >
+            <Crown className="h-3.5 w-3.5" /> Admin
+          </button>
+          <button
+            onClick={() => { setRole("user"); toast.success("Switched to User"); }}
+            className={`flex items-center gap-1.5 text-xs px-3 py-2 rounded-md transition-colors ${!isAdmin ? "bg-primary/10 text-primary border border-primary/30" : "bg-secondary text-muted-foreground hover:text-foreground"}`}
+          >
+            <User className="h-3.5 w-3.5" /> User
+          </button>
+        </div>
+      </div>
       {/* Plan */}
       <div className="glass-card p-5">
         <h3 className="text-sm font-semibold text-foreground mb-3">Current Plan</h3>
