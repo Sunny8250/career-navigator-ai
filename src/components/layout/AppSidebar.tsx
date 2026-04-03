@@ -31,6 +31,8 @@ const adminNavItem = { label: "Admin", path: "/admin", icon: Shield };
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { isAdmin } = useRole();
+  const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
     <motion.aside
