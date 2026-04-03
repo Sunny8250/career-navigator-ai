@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { ThemeToggle } from "./ThemeToggle";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useRole } from "@/hooks/use-role";
 
 const notifications = [
   { id: 1, text: "Your resume ATS score improved to 87%", time: "2m ago", unread: true },
