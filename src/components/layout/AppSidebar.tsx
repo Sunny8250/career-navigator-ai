@@ -2,19 +2,12 @@ import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard,
-  Briefcase,
-  FileText,
-  MessageSquare,
-  Code2,
-  CreditCard,
-  Shield,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
+  LayoutDashboard, Briefcase, FileText, MessageSquare, Code2,
+  CreditCard, Shield, Settings, ChevronLeft, ChevronRight, Sparkles,
 } from "lucide-react";
-import { useRole } from "@/hooks/use-role";
+import { useAuth } from "@/hooks/use-auth";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 const baseNavItems = [
   { label: "Dashboard", path: "/", icon: LayoutDashboard },
@@ -31,7 +24,23 @@ const adminNavItem = { label: "Admin", path: "/admin", icon: Shield };
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
-  const { isAdmin } = useRole();
+  const { user } = useAuth();
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["user-role", user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: !!user,
+  });
+
   const navItems = isAdmin ? [...baseNavItems, adminNavItem] : baseNavItems;
 
   return (
@@ -40,46 +49,26 @@ export function AppSidebar() {
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className="h-screen sticky top-0 flex flex-col border-r border-border bg-sidebar z-30"
     >
-      {/* Logo */}
       <div className="h-14 flex items-center px-4 border-b border-border">
         <Sparkles className="h-5 w-5 text-primary shrink-0" />
         <AnimatePresence>
           {!collapsed && (
-            <motion.span
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
-              className="ml-2.5 font-semibold text-foreground text-sm whitespace-nowrap overflow-hidden"
-            >
+            <motion.span initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: "auto" }} exit={{ opacity: 0, width: 0 }} className="ml-2.5 font-semibold text-foreground text-sm whitespace-nowrap overflow-hidden">
               CareerOS AI
             </motion.span>
           )}
         </AnimatePresence>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors duration-150 group ${
-                isActive
-                  ? "bg-primary/10 text-primary"
-                  : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-accent"
-              }`}
-            >
+            <NavLink key={item.path} to={item.path} className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm transition-colors duration-150 group ${isActive ? "bg-primary/10 text-primary" : "text-sidebar-foreground hover:text-foreground hover:bg-sidebar-accent"}`}>
               <item.icon className={`h-4 w-4 shrink-0 ${isActive ? "text-primary" : ""}`} />
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="whitespace-nowrap overflow-hidden"
-                  >
+                  <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="whitespace-nowrap overflow-hidden">
                     {item.label}
                   </motion.span>
                 )}
@@ -89,12 +78,8 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Collapse toggle */}
       <div className="p-2 border-t border-border">
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          className="w-full flex items-center justify-center py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
-        >
+        <button onClick={() => setCollapsed(!collapsed)} className="w-full flex items-center justify-center py-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>
       </div>
